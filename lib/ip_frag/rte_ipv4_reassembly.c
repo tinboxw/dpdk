@@ -95,9 +95,9 @@ ipv4_frag_reassemble(struct ip_frag_pkt *fp)
  *   - not all fragments of the packet are collected yet.
  */
 struct rte_mbuf *
-rte_ipv4_frag_reassemble_packet(struct rte_ip_frag_tbl *tbl,
+rte_ipv4_frag_reassemble_packet2(struct rte_ip_frag_tbl *tbl,
 	struct rte_ip_frag_death_row *dr, struct rte_mbuf *mb, uint64_t tms,
-	struct rte_ipv4_hdr *ip_hdr)
+	struct rte_ipv4_hdr *ip_hdr, uint32_t* nb_frags)
 {
 	struct ip_frag_pkt *fp;
 	struct ip_frag_key key;
@@ -157,6 +157,7 @@ rte_ipv4_frag_reassemble_packet(struct rte_ip_frag_tbl *tbl,
 
 	/* process the fragmented packet. */
 	mb = ip_frag_process(fp, dr, mb, ip_ofs, ip_len, ip_flag);
+	if(nb_frags) *nb_frags = fp->last_idx;
 	ip_frag_inuse(tbl, fp);
 
 	IP_FRAG_LOG(DEBUG, "%s:%d:\n"
@@ -170,4 +171,12 @@ rte_ipv4_frag_reassemble_packet(struct rte_ip_frag_tbl *tbl,
 		fp->total_size, fp->frag_size, fp->last_idx);
 
 	return mb;
+}
+
+struct rte_mbuf *
+rte_ipv4_frag_reassemble_packet(struct rte_ip_frag_tbl *tbl,
+	struct rte_ip_frag_death_row *dr, struct rte_mbuf *mb, uint64_t tms,
+	struct rte_ipv4_hdr *ip_hdr){
+	uint32_t nb_frags;
+  return rte_ipv4_frag_reassemble_packet2(tbl, dr, mb, tms, ip_hdr, &nb_frags);
 }

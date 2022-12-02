@@ -1471,6 +1471,9 @@ rte_eth_dev_start(uint16_t port_id)
 	if (*dev_info.dev_flags & RTE_ETH_DEV_NOLIVE_MAC_ADDR)
 		eth_dev_mac_restore(dev, &dev_info);
 
+	/* expose selection of PMD fast-path functions */
+	eth_dev_fp_ops_setup(rte_eth_fp_ops + port_id, dev);
+
 	diag = (*dev->dev_ops->dev_start)(dev);
 	if (diag == 0)
 		dev->data->dev_started = 1;
@@ -1496,9 +1499,6 @@ rte_eth_dev_start(uint16_t port_id)
 		RTE_FUNC_PTR_OR_ERR_RET(*dev->dev_ops->link_update, -ENOTSUP);
 		(*dev->dev_ops->link_update)(dev, 0);
 	}
-
-	/* expose selection of PMD fast-path functions */
-	eth_dev_fp_ops_setup(rte_eth_fp_ops + port_id, dev);
 
 	rte_ethdev_trace_start(port_id);
 	return 0;

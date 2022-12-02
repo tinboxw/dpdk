@@ -8,6 +8,10 @@ headers = files(
         'rte_jhash.h',
         'rte_thash.h',
         'rte_thash_gfni.h',
+        
+        # export the file(rte_cuckoo_hash.h/rte_cmp_x86.h) for exprobe-cli
+        'rte_cuckoo_hash.h',
+        'rte_cmp_x86.h',
 )
 indirect_headers += files(
         'rte_crc_arm64.h',

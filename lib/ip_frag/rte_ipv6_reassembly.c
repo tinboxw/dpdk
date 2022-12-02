@@ -134,9 +134,10 @@ ipv6_frag_reassemble(struct ip_frag_pkt *fp)
 #define MORE_FRAGS(x) (((x) & 0x100) >> 8)
 #define FRAG_OFFSET(x) (rte_cpu_to_be_16(x) >> 3)
 struct rte_mbuf *
-rte_ipv6_frag_reassemble_packet(struct rte_ip_frag_tbl *tbl,
+rte_ipv6_frag_reassemble_packet2(struct rte_ip_frag_tbl *tbl,
 	struct rte_ip_frag_death_row *dr, struct rte_mbuf *mb, uint64_t tms,
-	struct rte_ipv6_hdr *ip_hdr, struct rte_ipv6_fragment_ext *frag_hdr)
+	struct rte_ipv6_hdr *ip_hdr, struct rte_ipv6_fragment_ext *frag_hdr, 
+	uint32_t* nb_frags)
 {
 	struct ip_frag_pkt *fp;
 	struct ip_frag_key key;
@@ -202,6 +203,7 @@ rte_ipv6_frag_reassemble_packet(struct rte_ip_frag_tbl *tbl,
 	/* process the fragmented packet. */
 	mb = ip_frag_process(fp, dr, mb, ip_ofs, ip_len,
 			MORE_FRAGS(frag_hdr->frag_data));
+	*nb_frags = fp->last_idx;
 	ip_frag_inuse(tbl, fp);
 
 	IP_FRAG_LOG(DEBUG, "%s:%d:\n"
@@ -216,3 +218,12 @@ rte_ipv6_frag_reassemble_packet(struct rte_ip_frag_tbl *tbl,
 
 	return mb;
 }
+
+struct rte_mbuf *
+rte_ipv6_frag_reassemble_packet(struct rte_ip_frag_tbl *tbl,
+	struct rte_ip_frag_death_row *dr, struct rte_mbuf *mb, uint64_t tms,
+	struct rte_ipv6_hdr *ip_hdr, struct rte_ipv6_fragment_ext *frag_hdr){
+  uint32_t nb_frags;
+  return rte_ipv6_frag_reassemble_packet2(tbl, dr, mb, tms, ip_hdr, frag_hdr, &nb_frags);
+}
+

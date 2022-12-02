@@ -128,6 +128,11 @@ struct rte_mbuf *rte_ipv6_frag_reassemble_packet(struct rte_ip_frag_tbl *tbl,
 		struct rte_mbuf *mb, uint64_t tms, struct rte_ipv6_hdr *ip_hdr,
 		struct rte_ipv6_fragment_ext *frag_hdr);
 
+struct rte_mbuf *rte_ipv6_frag_reassemble_packet2(struct rte_ip_frag_tbl *tbl,
+		struct rte_ip_frag_death_row *dr,
+		struct rte_mbuf *mb, uint64_t tms, struct rte_ipv6_hdr *ip_hdr,
+		struct rte_ipv6_fragment_ext *frag_hdr, uint32_t* nb_frags);
+
 /**
  * Return a pointer to the packet's fragment header, if found.
  * It only looks at the extension header that's right after the fixed IPv6
@@ -200,6 +205,10 @@ int32_t rte_ipv4_fragment_packet(struct rte_mbuf *pkt_in,
 struct rte_mbuf * rte_ipv4_frag_reassemble_packet(struct rte_ip_frag_tbl *tbl,
 		struct rte_ip_frag_death_row *dr,
 		struct rte_mbuf *mb, uint64_t tms, struct rte_ipv4_hdr *ip_hdr);
+struct rte_mbuf * rte_ipv4_frag_reassemble_packet2(struct rte_ip_frag_tbl *tbl,
+		struct rte_ip_frag_death_row *dr,
+		struct rte_mbuf *mb, uint64_t tms, struct rte_ipv4_hdr *ip_hdr,
+		uint32_t* nb_frags);
 
 /**
  * Check if the IPv4 packet is fragmented
